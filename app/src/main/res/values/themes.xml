@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Tema principal de ReVio+ -->
+    <style name="Theme.ReVioPlus" parent="Theme.Material3.DayNight.NoActionBar">
+
+    </style>
+
+</resources>
