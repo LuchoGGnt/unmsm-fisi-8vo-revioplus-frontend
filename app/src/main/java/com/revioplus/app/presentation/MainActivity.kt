@@ -21,7 +21,9 @@ import com.revioplus.app.presentation.components.ReVioBottomBar
 import com.revioplus.app.presentation.navigation.NavRoute
 import com.revioplus.app.presentation.navigation.ReVioNavGraph
 import com.revioplus.app.presentation.theme.ReVioPlusTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
