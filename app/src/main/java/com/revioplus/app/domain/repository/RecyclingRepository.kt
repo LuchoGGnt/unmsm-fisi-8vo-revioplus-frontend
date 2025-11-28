@@ -11,4 +11,8 @@ data class RecyclingStats (
 interface RecyclingRepository {
     fun getRecentDeposits(limit: Int = 5): Flow<List<DepositoReciclaje>>
     fun getRecyclingStats(): Flow<RecyclingStats>
+    suspend fun registerDeposit(
+        idUsuario: Long,
+        cantidadBotellas: Int
+    ): DepositoReciclaje
 }

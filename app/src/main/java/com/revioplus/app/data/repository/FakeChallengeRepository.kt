@@ -31,5 +31,14 @@ class FakeChallengeRepository : ChallengeRepository {
 
     override fun getCurrentChallenge(): Flow<Desafio?> = currentChallengeFlow.asStateFlow()
 
-    override fun getCurrentChallengeProgress(): Flow<ChallengeProgress> = progressFlow.asStateFlow()
+    override fun getCurrentChallengeProgress(): Flow<ChallengeProgress> =
+        progressFlow.asStateFlow()
+
+    override suspend fun addProgress(botellas: Int) {
+        val current = progressFlow.value
+        val updated = current.copy(
+            botellasActuales = current.botellasActuales + botellas
+        )
+        progressFlow.value = updated
+    }
 }

@@ -1,6 +1,5 @@
 package com.revioplus.app.presentation.navigation
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -9,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.revioplus.app.presentation.home.HomeScreen
 import com.revioplus.app.presentation.deposit.DepositScreen
 import com.revioplus.app.presentation.profile.ProfileScreen
+import com.revioplus.app.presentation.profile.wallet.WalletScreen
 
 @Composable
 fun ReVioNavGraph(
@@ -17,31 +17,36 @@ fun ReVioNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavRoute.Home.route,         // Pantalla inicial
+        startDestination = NavRoute.Home.route,
         modifier = modifier
     ) {
         composable(NavRoute.Home.route) {
             HomeScreen(
                 onNavigateToDeposit = {
-//                    navController.navigate(NavRoute.Deposit.route)
                     navController.navigateBottomBar(NavRoute.Deposit.route)
                 },
                 onNavigateToProfile = {
-//                    navController.navigate(NavRoute.Profile.route)
                     navController.navigateBottomBar(NavRoute.Profile.route)
                 }
             )
         }
+
         composable(NavRoute.Deposit.route) {
             DepositScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
         composable(NavRoute.Profile.route) {
             ProfileScreen(
+                onNavigateToWallet = {
+                    navController.navigate(NavRoute.ProfileWallet.route)
+                }
+            )
+        }
+
+        composable(NavRoute.ProfileWallet.route) {
+            WalletScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
