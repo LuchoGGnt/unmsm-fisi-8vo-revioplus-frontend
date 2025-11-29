@@ -12,9 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,14 +37,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun ProfileScreen(
     onNavigateToWallet: () -> Unit,
+    onNavigateToHistory: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Perfil") }
+                title = { Text(text = "Mi Perfil") }
             )
         }
     ) { innerPadding ->
@@ -51,8 +54,19 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
+            ProfileTabs(
+                selectedIndex = 0,
+                modifier = Modifier.fillMaxWidth(),
+                onProfileClick = { /* ya estamos en Perfil */ },
+                onWalletClick = onNavigateToWallet,
+                onHistoryClick = onNavigateToHistory
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             if (state.isLoading) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -84,9 +98,7 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = state.displayName
-                            .take(2)
-                            .uppercase(),
+                        text = state.displayName.take(2).uppercase(),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -219,15 +231,6 @@ fun ProfileScreen(
                         textAlign = TextAlign.Start
                     )
                 }
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = onNavigateToWallet,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Ver billetera")
             }
         }
     }
