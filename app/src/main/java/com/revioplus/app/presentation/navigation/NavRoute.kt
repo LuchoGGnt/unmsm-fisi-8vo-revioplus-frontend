@@ -4,4 +4,6 @@ sealed class NavRoute(val route: String) {
     data object Home : NavRoute("home")
     data object Deposit : NavRoute("deposit")
     data object Profile : NavRoute("profile")
+    data object ProfileWallet : NavRoute("profile_wallet")
+    data object ProfileHistory : NavRoute("profile_history")
 }
