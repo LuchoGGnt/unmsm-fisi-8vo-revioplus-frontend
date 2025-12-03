@@ -2,7 +2,7 @@ package com.revioplus.app.di
 
 import com.revioplus.app.data.remote.ReVioApi
 import com.revioplus.app.data.repository.FakeChallengeRepository
-import com.revioplus.app.data.repository.FakeRecyclingRepository
+import com.revioplus.app.data.repository.RecyclingRepositoryImpl
 import com.revioplus.app.data.repository.UserRepositoryImpl
 import com.revioplus.app.data.repository.WalletRepositoryImpl
 import com.revioplus.app.domain.repository.ChallengeRepository
@@ -39,7 +39,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRecyclingRepository(): RecyclingRepository = FakeRecyclingRepository()
+    fun provideRecyclingRepository(api: ReVioApi): RecyclingRepository {
+        return RecyclingRepositoryImpl(api)
+    }
 
     @Provides
     @Singleton

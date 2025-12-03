@@ -4,6 +4,7 @@ data class DepositoReciclaje(
     val idDeposito: Long,
     val idUsuario: Long,
     val idPuntoReciclaje: Long? = null,
+    val nombrePuntoReciclaje: String? = null, // <<< CAMPO NUEVO
     val fechaHoraMillis: Long,
     val cantidadBotellas: Int,
     val pesoEstimadoKg: Double? = null,
