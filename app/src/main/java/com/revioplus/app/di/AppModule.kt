@@ -3,14 +3,15 @@ package com.revioplus.app.di
 import com.revioplus.app.data.remote.ReVioApi
 import com.revioplus.app.data.repository.FakeChallengeRepository
 import com.revioplus.app.data.repository.FakeRecyclingRepository
-import com.revioplus.app.data.repository.FakeWalletRepository
 import com.revioplus.app.data.repository.UserRepositoryImpl
+import com.revioplus.app.data.repository.WalletRepositoryImpl
 import com.revioplus.app.domain.repository.ChallengeRepository
 import com.revioplus.app.domain.repository.RecyclingRepository
 import com.revioplus.app.domain.repository.UserRepository
 import com.revioplus.app.domain.repository.WalletRepository
 import com.revioplus.app.domain.usecase.GetHomeDashboardUseCase
 import com.revioplus.app.domain.usecase.GetProfileDataUseCase
+import com.revioplus.app.domain.usecase.GetWalletForCurrentUserUseCase
 import com.revioplus.app.domain.usecase.RegisterDepositUseCase
 import dagger.Module
 import dagger.Provides
@@ -32,15 +33,17 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideWalletRepository(api: ReVioApi): WalletRepository {
+        return WalletRepositoryImpl(api)
+    }
+
+    @Provides
+    @Singleton
     fun provideRecyclingRepository(): RecyclingRepository = FakeRecyclingRepository()
 
     @Provides
     @Singleton
     fun provideChallengeRepository(): ChallengeRepository = FakeChallengeRepository()
-
-    @Provides
-    @Singleton
-    fun provideWalletRepository(): WalletRepository = FakeWalletRepository()
 
     // Use cases
 
@@ -75,22 +78,22 @@ object AppModule {
     @Provides
     @Singleton
     fun provideGetProfileDataUseCase(
-        userRepository: UserRepository,
+        userRepository: UserRepository
     ): GetProfileDataUseCase {
         return GetProfileDataUseCase(
-            userRepository = userRepository,
+            userRepository = userRepository
         )
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideGetWalletForCurrentUserUseCase(
-//        userRepository: UserRepository,
-//        walletRepository: WalletRepository
-//    ): GetWalletForCurrentUserUseCase {
-//        return GetWalletForCurrentUserUseCase(
-//            userRepository = userRepository,
-//            walletRepository = walletRepository
-//        )
-//    }
+    @Provides
+    @Singleton
+    fun provideGetWalletForCurrentUserUseCase(
+        userRepository: UserRepository,
+        walletRepository: WalletRepository
+    ): GetWalletForCurrentUserUseCase {
+        return GetWalletForCurrentUserUseCase(
+            userRepository = userRepository,
+            walletRepository = walletRepository
+        )
+    }
 }
