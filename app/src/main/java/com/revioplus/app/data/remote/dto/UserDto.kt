@@ -1,6 +1,15 @@
 package com.revioplus.app.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
+import com.revioplus.app.domain.model.EstadoCuentaUsuario
+import com.revioplus.app.domain.model.EstadoCuentaUsuario.ACTIVA
+import com.revioplus.app.domain.model.EstadoCuentaUsuario.ELIMINADA
+import com.revioplus.app.domain.model.EstadoCuentaUsuario.PENDIENTE_VERIFICACION
+import com.revioplus.app.domain.model.EstadoCuentaUsuario.SUSPENDIDA
+import com.revioplus.app.domain.model.TipoUsuario
+import com.revioplus.app.domain.model.TipoUsuario.ADMIN
+import com.revioplus.app.domain.model.TipoUsuario.NORMAL
+import com.revioplus.app.domain.model.TipoUsuario.OPERADOR
 import com.revioplus.app.domain.model.Usuario
 
 /**
@@ -33,7 +42,16 @@ data class UserDto(
     @SerializedName("totalCo2Saved") val totalCo2Saved: Double?,
     
     // Settings
-    @SerializedName("nfcEnabled") val nfcEnabled: Boolean?
+    @SerializedName("nfcEnabled") val nfcEnabled: Boolean?,
+
+    // Campos faltantes para mapear con la Entidad en Frontend
+    @SerializedName("nextLevelXp") val nextLevelXp: Long,
+    @SerializedName("lastDepositDateMillis") val lastDepositDateMillis: Long?,
+    @SerializedName("termsAccepted") val termsAccepted: Boolean,
+    @SerializedName("acceptedTermsVersion") val acceptedTermsVersion: String?,
+    @SerializedName("termsAcceptedDateMillis") val termsAcceptedDateMillis: Long?,
+    @SerializedName("userType") val userType: String,
+    @SerializedName("accountStatus") val accountStatus: String
 )
 
 fun UserDto.toDomain(): Usuario {
@@ -61,8 +79,31 @@ fun UserDto.toDomain(): Usuario {
         totalCo2AhorradoKg = totalCo2Saved ?: 0.0,
         
         tieneNfcHabilitado = nfcEnabled ?: false,
-        
-        // Valores por defecto para campos internos o no mapeados aun
-        aceptaTerminos = true
+
+        xpSiguienteNivel = nextLevelXp,
+        fechaUltimoDepositoMillis =  lastDepositDateMillis,
+        aceptaTerminos =  termsAccepted,
+        versionTerminosAceptados =  acceptedTermsVersion,
+        fechaAceptacionTerminosMillis = termsAcceptedDateMillis,
+        tipoUsuario = identificarTipo(userType),
+        estadoCuenta = identificarEstado(accountStatus),
     )
 }
+
+
+fun UserDto.identificarEstado(estado : String ) =
+    when (estado){
+        "ACTIVA" ->ACTIVA
+        "SUSPENDIDA" -> SUSPENDIDA
+        "ELIMINADA" ->  ELIMINADA
+        "PENDIENTE_VERIFICACION" ->  PENDIENTE_VERIFICACION
+        else ->  ACTIVA
+    }
+
+fun UserDto.identificarTipo(tipo : String ) =
+    when (tipo){
+        "NORMAL" ->NORMAL
+        "ADMIN" -> ADMIN
+        "OPERADOR" -> OPERADOR
+        else -> NORMAL
+    }

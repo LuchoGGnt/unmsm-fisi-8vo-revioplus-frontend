@@ -15,14 +15,12 @@ class GetHomeDashboardUseCase @Inject constructor(
     // Llamado desde el ViewModel dentro de una corrutina
     suspend operator fun invoke(): HomeDashboard? {
         val usuario = userRepository.getCurrentUser().first() ?: return null
-        val stats = recyclingRepository.getRecyclingStats().first()
         val challenge = challengeRepository.getCurrentChallenge().first()
         val progress = challengeRepository.getCurrentChallengeProgress().first()
         val depositos = recyclingRepository.getRecentDeposits(limit = 5, 1).first()
 
         return HomeDashboard(
             usuario = usuario,
-            recyclingStats = stats,
             desafioActual = challenge,
             progresoDesafio = progress,
             depositosRecientes = depositos
