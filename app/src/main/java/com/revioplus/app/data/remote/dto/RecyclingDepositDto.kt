@@ -9,7 +9,6 @@ data class RecyclingDepositDto(
     @SerializedName("stationId") val stationId: Long?,
     @SerializedName("stationName") val stationName: String?, 
     @SerializedName("bottlesCount") val bottlesCount: Int,
-    @SerializedName("estimatedWeightKg") val estimatedWeightKg: Double,
     @SerializedName("xpGenerated") val xpGenerated: Long,
     @SerializedName("co2SavedKg") val co2SavedKg: Double,
     @SerializedName("createdAt") val createdAt: Long
@@ -23,7 +22,6 @@ fun RecyclingDepositDto.toDomain(): DepositoReciclaje {
         nombrePuntoReciclaje = stationName,
         fechaHoraMillis = createdAt,
         cantidadBotellas = bottlesCount,
-        pesoEstimadoKg = estimatedWeightKg,
         xpGenerado = xpGenerated,
         co2AhorradoKg = co2SavedKg,
         fechaCreacionMillis = createdAt

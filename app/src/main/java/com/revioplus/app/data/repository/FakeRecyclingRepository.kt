@@ -56,7 +56,7 @@ class FakeRecyclingRepository : RecyclingRepository {
     private var nextId: Long =
         depositosFlow.value.maxOfOrNull { it.idDeposito }?.plus(1) ?: 1L
 
-    override fun getRecentDeposits(limit: Int): Flow<List<DepositoReciclaje>> =
+    override fun getRecentDeposits(limit: Int, userId: Long): Flow<List<DepositoReciclaje>> =
         depositosFlow.map { list ->
             list.sortedByDescending { it.fechaHoraMillis }
                 .take(limit)
