@@ -4,5 +4,4 @@ import com.revioplus.app.domain.repository.RecyclingStats
 
 data class ProfileData(
     val usuario: Usuario,
-    val recyclingStats: RecyclingStats
 )

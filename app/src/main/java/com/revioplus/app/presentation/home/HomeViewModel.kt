@@ -40,7 +40,6 @@ class HomeViewModel @Inject constructor(
                 }
 
                 val user = dashboard.usuario
-                val stats = dashboard.recyclingStats
                 val desafio = dashboard.desafioActual
                 val progreso = dashboard.progresoDesafio
 
@@ -56,20 +55,21 @@ class HomeViewModel @Inject constructor(
                     city = user.ciudad ?: "",
                     levelNumber = user.nivelActual,
                     levelTitle = user.tituloNivel,
-                    xpCurrent = user.xpNivelActual,
+                    xpCurrent = user.xpTotal,
                     xpNext = user.xpSiguienteNivel,
-                    bottles = stats.totalBotellasRecicladas,
-                    co2Kg = stats.totalCo2AhorradoKg,
-                    challengeTitle = desafio?.nombre ?: "",
+                    bottles = user.totalBotellasRecicladas,
+                    co2Kg = user.totalCo2AhorradoKg,
+                    challengeTitle = desafio?.nombre ?: "Sin desafío activo",
                     challengeProgress = progreso?.botellasActuales ?: 0,
-                    challengeGoal = progreso?.metaBotellas ?: (desafio?.metaCantidadBotellas ?: 0),
+                    challengeGoal = progreso?.metaBotellas ?: (desafio?.metaCantidadBotellas ?: 1),
                     recentDepositsText = depositsUi,
                     errorMessage = null
                 )
             } catch (e: Exception) {
+                e.printStackTrace()
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = "Ocurrió un error al cargar el panel de inicio."
+                    errorMessage = "Error: ${e.message ?: e.toString()}"
                 )
             }
         }

@@ -23,7 +23,6 @@ class FakeUserRepository : UserRepository {
             fechaRegistroMillis = System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30,
             miembroDesde = "Oct 2025",
             xpTotal = 4200L,
-            xpNivelActual = 200L,
             xpSiguienteNivel = 1000L,
             nivelActual = 3,
             tituloNivel = "Eco-Guerrero",

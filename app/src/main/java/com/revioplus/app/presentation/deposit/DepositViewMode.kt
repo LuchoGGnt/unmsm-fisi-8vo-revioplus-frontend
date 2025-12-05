@@ -19,7 +19,7 @@ class DepositViewModel @Inject constructor(
 
     fun onIncrement() {
         val current = _uiState.value.cantidadBotellas
-        if (current < 999) { // límite arbitrario
+        if (current < 51) { // límite
             _uiState.value = _uiState.value.copy(
                 cantidadBotellas = current + 1,
                 successMessage = null,
@@ -41,9 +41,17 @@ class DepositViewModel @Inject constructor(
 
     fun onRegisterDeposit() {
         val cantidad = _uiState.value.cantidadBotellas
+
         if (cantidad <= 0) {
             _uiState.value = _uiState.value.copy(
-                errorMessage = "La cantidad debe ser mayor que cero."
+                errorMessage = "La cantidad debe ser mayor que cero botellas"
+            )
+            return
+        }
+
+        if (cantidad > 50) {
+            _uiState.value = _uiState.value.copy(
+                errorMessage = "La cantidad debe ser menor a 50 botellas"
             )
             return
         }
@@ -56,20 +64,25 @@ class DepositViewModel @Inject constructor(
                     successMessage = null
                 )
 
-                val deposit = registerDepositUseCase(cantidad)
+                // TODO: En el futuro, obtener el stationId desde el escáner QR.
+                // Por ahora, simulamos que estamos en la Estación Central (ID 1)
+                val simulatedStationId = 1L
+                
+                val deposit = registerDepositUseCase(cantidad, simulatedStationId)
 
                 _uiState.value = _uiState.value.copy(
                     isSaving = false,
-                    successMessage = "Has registrado $cantidad botellas. +" +
-                            "${deposit.xpGenerado} XP · " +
-                            String.format("%.2f", deposit.co2AhorradoKg) + " kg CO₂",
+                    successMessage = """Has registrado $cantidad botellas de reciclaje.
+                            ${deposit.xpGenerado} XP 
+                            ${deposit.co2AhorradoKg.toString().format("%.2f")}  kg CO₂""",
                     xpGanado = deposit.xpGenerado,
                     co2Ahorrado = deposit.co2AhorradoKg
                 )
             } catch (e: Exception) {
+                e.printStackTrace()
                 _uiState.value = _uiState.value.copy(
                     isSaving = false,
-                    errorMessage = "No se pudo registrar el depósito."
+                    errorMessage = "Error: ${e.message ?: "No se pudo registrar"}"
                 )
             }
         }

@@ -30,13 +30,12 @@ class ProfileViewModel @Inject constructor(
                 if (data == null) {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        errorMessage = "No se pudo cargar la información de perfil."
+                        errorMessage = "No se pudo cargar la información de perfil (Datos nulos)."
                     )
                     return@launch
                 }
 
                 val user = data.usuario
-                val stats = data.recyclingStats
 
                 _uiState.value = ProfileUiState(
                     isLoading = false,
@@ -54,15 +53,17 @@ class ProfileViewModel @Inject constructor(
                     levelTitle = user.tituloNivel,
                     xpTotal = user.xpTotal,
 
-                    totalBottles = stats.totalBotellasRecicladas,
-                    totalCo2Kg = stats.totalCo2AhorradoKg,
+                    totalBottles = user.totalBotellasRecicladas,
+                    totalCo2Kg = user.totalCo2AhorradoKg,
 
                     hasNfcEnabled = user.tieneNfcHabilitado
                 )
             } catch (e: Exception) {
+                // DEBUG: Mostrar el error real en la UI
+                e.printStackTrace()
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = "Ocurrió un error al cargar el perfil."
+                    errorMessage = "Error: ${e.message ?: e.toString()}"
                 )
             }
         }

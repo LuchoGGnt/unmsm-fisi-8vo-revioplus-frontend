@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.revioplus.app.presentation.home
 
@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 
 @Composable
 fun HomeScreen(
@@ -23,6 +24,14 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    // Se ejecuta cada vez que la pantalla vuelve a estar visible
+    LifecycleResumeEffect(Unit) {
+        viewModel.loadDashboard()
+        onPauseOrDispose { 
+            // Opcional: Código a ejecutar cuando la pantalla se va (onPause)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -39,50 +48,48 @@ fun HomeScreen(
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator()
-                return@Column
             }
 
-            state.errorMessage?.let { msg ->
-                Text(text = msg)
-                return@Column
-            }
-
-            Text(text = "Hola, ${state.userName} (${state.city})")
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(text = "Nivel ${state.levelNumber} · ${state.levelTitle}")
-            Text(text = "XP actual: ${state.xpCurrent}/${state.xpNext}")
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(text = "Has reciclado ${state.bottles} botellas")
-            Text(text = "CO₂ ahorrado: ${"%.2f".format(state.co2Kg)} kg")
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (state.challengeTitle.isNotBlank()) {
-                Text(text = state.challengeTitle)
-                Text(text = "Progreso: ${state.challengeProgress}/${state.challengeGoal} botellas")
+            if (state.errorMessage != null) {
+                Text(text = state.errorMessage!!)
+            } else if (!state.isLoading) {
+                Text(text = "Hola, ${state.userName} (${state.city})")
                 Spacer(modifier = Modifier.height(8.dp))
-            }
 
-            Text(text = "Actividad reciente:")
-            state.recentDepositsText.forEach { line ->
-                Text(text = "• $line")
-            }
+                Text(text = "Nivel ${state.levelNumber} · ${state.levelTitle}")
+                Text(text = "XP actual: ${state.xpCurrent}/${state.xpNext}")
+                Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Has reciclado ${state.bottles} botellas")
+                Text(text = "CO₂ ahorrado: ${"%.2f".format(state.co2Kg)} kg")
+                Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
-                onClick = onNavigateToDeposit,
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text("Ir a Depositar")
-            }
+                if (state.challengeTitle.isNotBlank()) {
+                    Text(text = state.challengeTitle)
+                    Text(text = "Progreso: ${state.challengeProgress}/${state.challengeGoal} botellas")
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
 
-            Button(
-                onClick = onNavigateToProfile,
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text("Ir a Perfil")
+                Text(text = "Actividad reciente:")
+                state.recentDepositsText.forEach { line ->
+                    Text(text = "• $line")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = onNavigateToDeposit,
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text("Ir a Depositar")
+                }
+
+                Button(
+                    onClick = onNavigateToProfile,
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text("Ir a Perfil")
+                }
             }
         }
     }
