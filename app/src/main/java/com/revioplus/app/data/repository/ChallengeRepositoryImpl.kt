@@ -2,6 +2,7 @@ package com.revioplus.app.data.repository
 
 import android.util.Log
 import com.revioplus.app.data.remote.ReVioApi
+import com.revioplus.app.data.remote.dto.UpdateChallengeProgressRequestDto
 import com.revioplus.app.data.remote.dto.toDomainChallenge
 import com.revioplus.app.data.remote.dto.toDomainProgress
 import com.revioplus.app.domain.model.Desafio
@@ -36,8 +37,11 @@ class ChallengeRepositoryImpl @Inject constructor(
         emit(ChallengeProgress(0, 100))
     }
 
-    override suspend fun addProgress(botellas: Int) {
-        // TODO: Implementar escritura
-        // api.updateChallengeProgress(...)
+    override suspend fun addProgress(userId : Long, bottles: Int) {
+        //llamar a la api y enviamos el avance del usuario
+        api.updateChallengeProgress(
+            UpdateChallengeProgressRequestDto(userId, bottles)
+        )
+
     }
 }

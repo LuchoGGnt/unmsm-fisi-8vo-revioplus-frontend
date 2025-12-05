@@ -24,7 +24,8 @@ class ProfileHistoryViewModel @Inject constructor(
         loadHistory()
     }
 
-    private fun loadHistory() {
+    // CAMBIO: Ahora es public para permitir recarga desde la UI
+    fun loadHistory() {
         viewModelScope.launch {
             // 1. Indicar que estamos cargando
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)

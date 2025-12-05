@@ -31,9 +31,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 
 @Composable
 fun ProfileScreen(
@@ -43,6 +43,12 @@ fun ProfileScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+
+    // RECARGA AUTOMÁTICA: Usar LifecycleResumeEffect
+    LifecycleResumeEffect(Unit) {
+        viewModel.loadProfile()
+        onPauseOrDispose { }
+    }
 
     Scaffold(
         topBar = {
@@ -76,12 +82,12 @@ fun ProfileScreen(
                 ) {
                     CircularProgressIndicator()
                 }
-                return@Column
+                // Opcional: return@Column
             }
 
             state.errorMessage?.let { msg ->
                 Text(text = msg)
-                return@Column
+                // return@Column
             }
 
             Row(

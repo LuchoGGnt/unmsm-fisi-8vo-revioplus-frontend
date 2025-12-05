@@ -11,5 +11,5 @@ data class ChallengeProgress(
 interface ChallengeRepository {
     fun getCurrentChallenge(): Flow<Desafio?>
     fun getCurrentChallengeProgress(): Flow<ChallengeProgress>
-    suspend fun addProgress(botellas: Int)
+    suspend fun addProgress(userId: Long, bottles: Int)
 }
