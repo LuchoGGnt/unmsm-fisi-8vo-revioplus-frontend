@@ -12,9 +12,13 @@ class RegisterDepositUseCase @Inject constructor(
     private val recyclingRepository: RecyclingRepository,
     private val challengeRepository: ChallengeRepository
 ) {
-    suspend operator fun invoke(cantidadBotellas: Int): DepositoReciclaje {
+    suspend operator fun invoke(cantidadBotellas: Int, stationId: Long): DepositoReciclaje {
         require(cantidadBotellas > 0) {
             "La cantidad de botellas debe ser mayor que cero."
+        }
+
+        require(cantidadBotellas <= 50) {
+            "La cantidad de botellas máxima es 50."
         }
 
         val user = userRepository.getCurrentUser().first()
@@ -23,11 +27,12 @@ class RegisterDepositUseCase @Inject constructor(
         // Registrar el depósito en el repositorio
         val deposit = recyclingRepository.registerDeposit(
             idUsuario = user.idUsuario,
-            cantidadBotellas = cantidadBotellas
+            cantidadBotellas = cantidadBotellas,
+            stationId = stationId
         )
 
-        // Actualizar progreso de desafío
-        challengeRepository.addProgress(cantidadBotellas)
+        // Actualizar progreso del desafío
+        challengeRepository.addProgress(user.idUsuario, cantidadBotellas)
 
         return deposit
     }

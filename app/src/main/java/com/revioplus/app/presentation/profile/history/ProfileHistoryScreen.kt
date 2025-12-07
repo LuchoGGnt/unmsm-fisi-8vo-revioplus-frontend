@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.revioplus.app.presentation.profile.ProfileTabs
 
 @Composable
@@ -39,6 +40,12 @@ fun ProfileHistoryScreen(
     viewModel: ProfileHistoryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // RECARGA AUTOMÁTICA
+    LifecycleResumeEffect(Unit) {
+        viewModel.loadHistory()
+        onPauseOrDispose { }
+    }
 
     Scaffold(
         topBar = {

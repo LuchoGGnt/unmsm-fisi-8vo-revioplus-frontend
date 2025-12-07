@@ -56,7 +56,8 @@ class FakeRecyclingRepository : RecyclingRepository {
     private var nextId: Long =
         depositosFlow.value.maxOfOrNull { it.idDeposito }?.plus(1) ?: 1L
 
-    override fun getRecentDeposits(limit: Int): Flow<List<DepositoReciclaje>> =
+    // Acepta userId pero lo ignora en la implementación Fake
+    override fun getRecentDeposits(limit: Int, userId: Long): Flow<List<DepositoReciclaje>> =
         depositosFlow.map { list ->
             list.sortedByDescending { it.fechaHoraMillis }
                 .take(limit)
@@ -65,9 +66,11 @@ class FakeRecyclingRepository : RecyclingRepository {
     override fun getRecyclingStats(): Flow<RecyclingStats> =
         statsFlow.asStateFlow()
 
+    // Acepta stationId pero lo ignora en la implementación Fake (guarda null)
     override suspend fun registerDeposit(
         idUsuario: Long,
-        cantidadBotellas: Int
+        cantidadBotellas: Int,
+        stationId: Long
     ): DepositoReciclaje {
         val now = System.currentTimeMillis()
 
@@ -79,7 +82,7 @@ class FakeRecyclingRepository : RecyclingRepository {
         val newDeposit = DepositoReciclaje(
             idDeposito = nextId++,
             idUsuario = idUsuario,
-            idPuntoReciclaje = null,
+            idPuntoReciclaje = stationId, // Guardamos el ID simulado
             fechaHoraMillis = now,
             cantidadBotellas = cantidadBotellas,
             pesoEstimadoKg = pesoKg,

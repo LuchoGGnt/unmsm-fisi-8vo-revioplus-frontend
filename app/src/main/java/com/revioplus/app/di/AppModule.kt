@@ -1,9 +1,11 @@
 package com.revioplus.app.di
 
-import com.revioplus.app.data.repository.FakeChallengeRepository
+import com.revioplus.app.data.remote.ReVioApi
+import com.revioplus.app.data.repository.ChallengeRepositoryImpl
 import com.revioplus.app.data.repository.FakeRecyclingRepository
-import com.revioplus.app.data.repository.FakeUserRepository
-import com.revioplus.app.data.repository.FakeWalletRepository
+import com.revioplus.app.data.repository.RecyclingRepositoryImpl
+import com.revioplus.app.data.repository.UserRepositoryImpl
+import com.revioplus.app.data.repository.WalletRepositoryImpl
 import com.revioplus.app.domain.repository.ChallengeRepository
 import com.revioplus.app.domain.repository.RecyclingRepository
 import com.revioplus.app.domain.repository.UserRepository
@@ -22,23 +24,31 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // Repositorios fake
+    // Repositorios
 
     @Provides
     @Singleton
-    fun provideUserRepository(): UserRepository = FakeUserRepository()
+    fun provideUserRepository(api: ReVioApi): UserRepository {
+        return UserRepositoryImpl(api)
+    }
 
     @Provides
     @Singleton
-    fun provideRecyclingRepository(): RecyclingRepository = FakeRecyclingRepository()
+    fun provideWalletRepository(api: ReVioApi): WalletRepository {
+        return WalletRepositoryImpl(api)
+    }
 
     @Provides
     @Singleton
-    fun provideChallengeRepository(): ChallengeRepository = FakeChallengeRepository()
+    fun provideRecyclingRepository(api: ReVioApi): RecyclingRepository {
+        return RecyclingRepositoryImpl(api)
+    }
 
     @Provides
     @Singleton
-    fun provideWalletRepository(): WalletRepository = FakeWalletRepository()
+    fun provideChallengeRepository(api: ReVioApi): ChallengeRepository {
+        return ChallengeRepositoryImpl(api)
+    }
 
     // Use cases
 
@@ -73,24 +83,22 @@ object AppModule {
     @Provides
     @Singleton
     fun provideGetProfileDataUseCase(
-        userRepository: UserRepository,
-        recyclingRepository: RecyclingRepository
+        userRepository: UserRepository
     ): GetProfileDataUseCase {
         return GetProfileDataUseCase(
-            userRepository = userRepository,
-            recyclingRepository = recyclingRepository
+            userRepository = userRepository
         )
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideGetWalletForCurrentUserUseCase(
-//        userRepository: UserRepository,
-//        walletRepository: WalletRepository
-//    ): GetWalletForCurrentUserUseCase {
-//        return GetWalletForCurrentUserUseCase(
-//            userRepository = userRepository,
-//            walletRepository = walletRepository
-//        )
-//    }
+    @Provides
+    @Singleton
+    fun provideGetWalletForCurrentUserUseCase(
+        userRepository: UserRepository,
+        walletRepository: WalletRepository
+    ): GetWalletForCurrentUserUseCase {
+        return GetWalletForCurrentUserUseCase(
+            userRepository = userRepository,
+            walletRepository = walletRepository
+        )
+    }
 }

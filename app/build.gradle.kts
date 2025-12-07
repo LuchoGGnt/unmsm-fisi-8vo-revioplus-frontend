@@ -120,6 +120,12 @@ dependencies {
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
 
+    // ADDED: Networking (Retrofit, OkHttp)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+
     // --- Tests (YA LOS TENÍAS) ---
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

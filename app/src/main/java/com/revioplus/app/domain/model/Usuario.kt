@@ -1,5 +1,13 @@
 package com.revioplus.app.domain.model
 
+import com.revioplus.app.domain.model.EstadoCuentaUsuario.ACTIVA
+import com.revioplus.app.domain.model.EstadoCuentaUsuario.ELIMINADA
+import com.revioplus.app.domain.model.EstadoCuentaUsuario.PENDIENTE_VERIFICACION
+import com.revioplus.app.domain.model.EstadoCuentaUsuario.SUSPENDIDA
+import com.revioplus.app.domain.model.TipoUsuario.ADMIN
+import com.revioplus.app.domain.model.TipoUsuario.NORMAL
+import com.revioplus.app.domain.model.TipoUsuario.OPERADOR
+
 data class Usuario(
     val idUsuario: Long,
     val nombreMostrar: String,
@@ -17,7 +25,6 @@ data class Usuario(
     val tipoUsuario: TipoUsuario = TipoUsuario.NORMAL,
 
     val xpTotal: Long = 0L,
-    val xpNivelActual: Long = 0L,
     val xpSiguienteNivel: Long = 0L,
     val nivelActual: Int = 1,
     val tituloNivel: String = "Nuevo Eco-Héroe",
@@ -39,8 +46,10 @@ data class Usuario(
 
 enum class EstadoCuentaUsuario {
     ACTIVA, SUSPENDIDA, ELIMINADA, PENDIENTE_VERIFICACION
+
 }
 
 enum class TipoUsuario {
-    NORMAL, ADMIN, OPERADOR
+    NORMAL, ADMIN, OPERADOR;
+
 }

@@ -31,16 +31,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.revioplus.app.presentation.profile.ProfileTabs
 
 @Composable
 fun WalletScreen(
-    onNavigateBack: () -> Unit,          // ← vuelve a Perfil
-    onNavigateToHistory: () -> Unit = {},// ← para cuando implementemos Historial
+    onNavigateBack: () -> Unit,
+    onNavigateToHistory: () -> Unit = {},
     viewModel: WalletViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+
+    // RECARGA AUTOMÁTICA
+    LifecycleResumeEffect(Unit) {
+        viewModel.loadWallet()
+        onPauseOrDispose { }
+    }
 
     Scaffold(
         topBar = {
