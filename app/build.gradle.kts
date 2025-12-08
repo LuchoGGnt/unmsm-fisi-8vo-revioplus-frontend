@@ -120,6 +120,9 @@ dependencies {
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
 
+    // ADDED: DataStore (Preferencias de usuario)
+    implementation(libs.androidx.datastore.preferences)
+
     // ADDED: Networking (Retrofit, OkHttp)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)

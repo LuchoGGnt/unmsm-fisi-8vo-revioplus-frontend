@@ -16,6 +16,7 @@ room = "2.6.1"                  # Room para base de datos local
 navigationCompose = "2.7.7"     # Navigation Compose para las pantallas
 coroutines = "1.8.1"            # Coroutines (background, flows, etc.)
 hiltNavigationCompose = "1.2.0" # Hilt + Navigation Compose
+datastore = "1.1.1"             # DataStore Preferences
 
 # ADDED: Networking
 retrofit = "2.9.0"
@@ -57,6 +58,9 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# ADDED: DataStore
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 # ADDED: Coroutines
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }

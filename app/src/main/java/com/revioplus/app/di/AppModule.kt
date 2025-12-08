@@ -1,5 +1,6 @@
 package com.revioplus.app.di
 
+import com.revioplus.app.data.local.SessionManager
 import com.revioplus.app.data.remote.ReVioApi
 import com.revioplus.app.data.repository.ChallengeRepositoryImpl
 import com.revioplus.app.data.repository.FakeRecyclingRepository
@@ -28,26 +29,26 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUserRepository(api: ReVioApi): UserRepository {
-        return UserRepositoryImpl(api)
+    fun provideUserRepository(api: ReVioApi, sessionManager: SessionManager): UserRepository {
+        return UserRepositoryImpl(api, sessionManager)
     }
 
     @Provides
     @Singleton
-    fun provideWalletRepository(api: ReVioApi): WalletRepository {
-        return WalletRepositoryImpl(api)
+    fun provideWalletRepository(api: ReVioApi, sessionManager: SessionManager): WalletRepository {
+        return WalletRepositoryImpl(api, sessionManager)
     }
 
     @Provides
     @Singleton
-    fun provideRecyclingRepository(api: ReVioApi): RecyclingRepository {
-        return RecyclingRepositoryImpl(api)
+    fun provideRecyclingRepository(api: ReVioApi, sessionManager: SessionManager): RecyclingRepository {
+        return RecyclingRepositoryImpl(api, sessionManager)
     }
 
     @Provides
     @Singleton
-    fun provideChallengeRepository(api: ReVioApi): ChallengeRepository {
-        return ChallengeRepositoryImpl(api)
+    fun provideChallengeRepository(api: ReVioApi, sessionManager: SessionManager): ChallengeRepository {
+        return ChallengeRepositoryImpl(api, sessionManager)
     }
 
     // Use cases
