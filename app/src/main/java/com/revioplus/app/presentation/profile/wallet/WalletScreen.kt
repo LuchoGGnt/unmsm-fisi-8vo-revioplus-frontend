@@ -3,36 +3,40 @@
 package com.revioplus.app.presentation.profile.wallet
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.revioplus.app.presentation.profile.ProfileTabs
+
+// Colores del tema oscuro
+private val DarkBackground = Color(0xFF121212)
+private val DarkSurface = Color(0xFF1E1E1E)
+private val TextWhite = Color.White
+private val TextGray = Color.Gray
+private val AccentColor = Color(0xFF4CAF50) // Verde
 
 @Composable
 fun WalletScreen(
@@ -43,24 +47,22 @@ fun WalletScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
-    // RECARGA AUTOMÁTICA
     LifecycleResumeEffect(Unit) {
         viewModel.loadWallet()
         onPauseOrDispose { }
     }
 
     Scaffold(
+        containerColor = DarkBackground,
         topBar = {
             TopAppBar(
-                title = { Text(text = "Billetera") },
+                title = { Text("Billetera", fontWeight = FontWeight.Bold, color = TextWhite) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Volver"
-                        )
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Volver", tint = TextWhite)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground)
             )
         }
     ) { innerPadding: PaddingValues ->
@@ -75,119 +77,75 @@ fun WalletScreen(
                 selectedIndex = 1,
                 modifier = Modifier.fillMaxWidth(),
                 onProfileClick = onNavigateBack,
-                onWalletClick = { /* ya estamos en billetera */ },
+                onWalletClick = { },
                 onHistoryClick = onNavigateToHistory
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            when {
-                uiState.isLoading -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator()
-                    }
+            if (uiState.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AccentColor)
                 }
-
-                uiState.errorMessage != null -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = uiState.errorMessage ?: "Error desconocido")
-                    }
+            } else if (uiState.errorMessage != null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = uiState.errorMessage!!, color = Color.Red)
                 }
-
-                else -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                            )
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = "Saldo disponible",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = uiState.saldoDisponibleText,
-                                    style = MaterialTheme.typography.headlineMedium
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "Saldo bloqueado: ${uiState.saldoBloqueadoText}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = "Límites y retiros",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Límite diario de retiros: ${uiState.limiteRetiroDiarioText}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "Mínimo por retiro: ${uiState.montoMinimoRetiroText}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = "Estado de la billetera",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Estado: ${uiState.estadoText}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "Último movimiento: ${uiState.ultimaActualizacionText}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-                    }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    // Tarjeta de Saldo
+                    BalanceCard(uiState)
+                    
+                    // Tarjeta de Límites
+                    LimitsCard(uiState)
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun BalanceCard(uiState: WalletUiState) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = AccentColor.copy(alpha = 0.1f))
+    ) {
+        Column(modifier = Modifier.padding(24.dp)) {
+            Text("Saldo disponible", style = MaterialTheme.typography.titleMedium, color = TextGray)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(uiState.saldoDisponibleText, style = MaterialTheme.typography.headlineLarge, color = TextWhite, fontWeight = FontWeight.ExtraBold)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text("Bloqueado: ${uiState.saldoBloqueadoText}", style = MaterialTheme.typography.bodyMedium, color = TextGray)
+        }
+    }
+}
+
+@Composable
+private fun LimitsCard(uiState: WalletUiState) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkSurface)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Límites y Estado", style = MaterialTheme.typography.titleMedium, color = TextWhite, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(16.dp))
+            InfoRow(label = "Límite de retiro diario", value = uiState.limiteRetiroDiarioText)
+            Divider(color = Color.DarkGray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
+            InfoRow(label = "Mínimo por retiro", value = uiState.montoMinimoRetiroText)
+            Divider(color = Color.DarkGray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
+            InfoRow(label = "Estado de la billetera", value = uiState.estadoText)
+            Divider(color = Color.DarkGray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
+            InfoRow(label = "Último movimiento", value = uiState.ultimaActualizacionText)
+        }
+    }
+}
+
+@Composable
+private fun InfoRow(label: String, value: String) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(label, color = TextGray, fontSize = 14.sp)
+        Text(value, color = TextWhite, fontWeight = FontWeight.Medium, fontSize = 14.sp)
     }
 }

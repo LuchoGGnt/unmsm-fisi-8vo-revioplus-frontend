@@ -98,6 +98,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    // Íconos de Material Design
+    implementation(libs.androidx.material.icons.extended) // <<< NUEVA DEPENDENCIA
+
     // NUEVO: para que Theme.Material3.DayNight.NoActionBar exista
     implementation(libs.google.material)
 

@@ -3,6 +3,7 @@
 package com.revioplus.app.presentation.profile.history
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,27 +12,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.revioplus.app.presentation.profile.ProfileTabs
+
+// Colores del tema oscuro
+private val DarkBackground = Color(0xFF121212)
+private val DarkSurface = Color(0xFF1E1E1E)
+private val TextWhite = Color.White
+private val TextGray = Color.Gray
+private val AccentColor = Color(0xFF4CAF50)
 
 @Composable
 fun ProfileHistoryScreen(
@@ -41,24 +44,22 @@ fun ProfileHistoryScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // RECARGA AUTOMÁTICA
     LifecycleResumeEffect(Unit) {
         viewModel.loadHistory()
         onPauseOrDispose { }
     }
 
     Scaffold(
+        containerColor = DarkBackground,
         topBar = {
             TopAppBar(
-                title = { Text(text = "Mi Perfil") },
+                title = { Text("Historial", fontWeight = FontWeight.Bold, color = TextWhite) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBackToProfile) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Volver"
-                        )
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Volver", tint = TextWhite)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground)
             )
         }
     ) { innerPadding: PaddingValues ->
@@ -66,106 +67,34 @@ fun ProfileHistoryScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
         ) {
-            // 🔹 Pestañas: Historial seleccionado (índice 2)
+            Spacer(modifier = Modifier.height(16.dp))
             ProfileTabs(
                 selectedIndex = 2,
                 modifier = Modifier.fillMaxWidth(),
                 onProfileClick = onNavigateBackToProfile,
                 onWalletClick = onNavigateToWallet,
-                onHistoryClick = { /* ya estamos en Historial */ }
+                onHistoryClick = { }
             )
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            when {
-                uiState.isLoading -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator()
-                    }
+            if (uiState.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = AccentColor)
                 }
-
-                uiState.errorMessage != null -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = uiState.errorMessage ?: "Error desconocido")
-                    }
+            } else if (uiState.errorMessage != null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = uiState.errorMessage!!, color = Color.Red)
                 }
-
-                else -> {
-                    // ------- Depósitos recientes -------
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = "Depósitos recientes",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            uiState.recentDeposits.forEach { item ->
-                                DepositHistoryRow(item)
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
-                        }
-                    }
-
-                    // ------- Resumen del mes -------
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = "Resumen del mes",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Column {
-                                    Text(
-                                        text = uiState.totalDepositsThisMonthText,
-                                        style = MaterialTheme.typography.titleLarge
-                                    )
-                                    Text(
-                                        text = "Depósitos realizados",
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
-                                Column(
-                                    horizontalAlignment = Alignment.End
-                                ) {
-                                    Text(
-                                        text = uiState.totalBottlesThisMonthText,
-                                        style = MaterialTheme.typography.titleLarge
-                                    )
-                                    Text(
-                                        text = "Botellas recicladas",
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                }
-                            }
-                        }
+            } else if (uiState.recentDeposits.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No tienes depósitos registrados.", color = TextGray)
+                }
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(uiState.recentDeposits) { item ->
+                        DepositHistoryRow(item)
                     }
                 }
             }
@@ -175,29 +104,25 @@ fun ProfileHistoryScreen(
 
 @Composable
 private fun DepositHistoryRow(item: DepositHistoryItemUi) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = DarkSurface)
     ) {
-        Text(
-            text = "${item.bottles} botellas",
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Text(
-            text = item.location,
-            style = MaterialTheme.typography.bodySmall
-        )
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = item.dateText,
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = "${item.xpEarnedText}  ·  ${item.co2SavedText}",
-                style = MaterialTheme.typography.bodySmall
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text("${item.bottles} botellas", style = MaterialTheme.typography.titleMedium, color = TextWhite, fontWeight = FontWeight.Bold)
+                Text(item.location, style = MaterialTheme.typography.bodySmall, color = TextGray)
+                Text(item.dateText, style = MaterialTheme.typography.bodySmall, color = TextGray)
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                Text(item.xpEarnedText, style = MaterialTheme.typography.bodyMedium, color = AccentColor, fontWeight = FontWeight.Bold)
+                Text(item.co2SavedText, style = MaterialTheme.typography.bodySmall, color = TextGray)
+            }
         }
     }
 }
