@@ -22,7 +22,7 @@ class LoginUseCase @Inject constructor(
             val response = api.login(request)
             
             // 3. Si la API no lanza excepción, guardamos la sesión
-            sessionManager.saveUserId(response.id)
+            sessionManager.saveUserId(response.id, response.token)
             
             // 4. Devolvemos true para indicar éxito
             true

@@ -1,5 +1,7 @@
 package com.revioplus.app.di
 
+import com.revioplus.app.data.local.SessionManager
+import com.revioplus.app.data.remote.AuthInterceptor
 import com.revioplus.app.data.remote.ReVioApi
 import dagger.Module
 import dagger.Provides
@@ -20,13 +22,19 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideAuthInterceptor(sessionManager: SessionManager): AuthInterceptor{
+        return AuthInterceptor(sessionManager)
+    }
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
         
         return OkHttpClient.Builder()
             .addInterceptor(logging)
+            .addInterceptor(authInterceptor)
             .build()
     }
 
