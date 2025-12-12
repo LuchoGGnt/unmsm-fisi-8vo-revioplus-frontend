@@ -2,30 +2,31 @@
 
 package com.revioplus.app.presentation.deposit
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+
+// Colores del tema oscuro
+private val DarkBackground = Color(0xFF121212)
+private val DarkSurface = Color(0xFF1E1E1E)
+private val TextWhite = Color.White
+private val TextGray = Color.Gray
+private val AccentColor = Color(0xFF4CAF50)
 
 @Composable
 fun DepositScreen(
@@ -34,18 +35,25 @@ fun DepositScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
+    // Navegar atrás automáticamente al registrar con éxito
+    LaunchedEffect(state.successMessage) {
+        if (state.successMessage != null) {
+            kotlinx.coroutines.delay(2000) // Esperar 2 segundos para que el usuario lea el mensaje
+            onNavigateBack()
+        }
+    }
+
     Scaffold(
+        containerColor = DarkBackground,
         topBar = {
             TopAppBar(
-                title = { Text("Registrar depósito") },
+                title = { Text("Registrar Depósito", color = TextWhite, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Volver"
-                        )
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Volver", tint = TextWhite)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground)
             )
         }
     ) { innerPadding ->
@@ -53,59 +61,56 @@ fun DepositScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "¿Cuántas botellas reciclaste?")
+            // Si se está guardando o ya se guardó, mostrar mensaje, si no, el contador
+            if (state.isSaving || state.successMessage != null) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (state.isSaving) {
+                        CircularProgressIndicator(color = AccentColor)
+                        Spacer(Modifier.height(16.dp))
+                        Text("Registrando...", color = TextWhite, fontSize = 18.sp)
+                    } else {
+                        Text("¡Éxito!", style = MaterialTheme.typography.headlineMedium, color = AccentColor)
+                        Spacer(Modifier.height(8.dp))
+                        Text(state.successMessage!!, color = TextGray, textAlign = TextAlign.Center)
+                    }
+                }
+            } else {
+                Text("¿Cuántas botellas reciclaste?", style = MaterialTheme.typography.headlineSmall, color = TextWhite, textAlign = TextAlign.Center)
+                Spacer(modifier = Modifier.height(32.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedButton(
-                    onClick = { viewModel.onDecrement() },
-                    enabled = !state.isSaving
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(text = "-")
+                    IconButton(onClick = viewModel::onDecrement, modifier = Modifier.size(48.dp), colors = IconButtonDefaults.iconButtonColors(containerColor = DarkSurface, contentColor = TextWhite)) {
+                        Icon(Icons.Default.Remove, contentDescription = "Restar")
+                    }
+
+                    Text(text = state.cantidadBotellas.toString(), style = MaterialTheme.typography.displayLarge, color = TextWhite, fontWeight = FontWeight.Bold)
+
+                    IconButton(onClick = viewModel::onIncrement, modifier = Modifier.size(48.dp), colors = IconButtonDefaults.iconButtonColors(containerColor = DarkSurface, contentColor = TextWhite)) {
+                        Icon(Icons.Default.Add, contentDescription = "Sumar")
+                    }
                 }
 
-                Text(
-                    text = state.cantidadBotellas.toString(),
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
+                Spacer(modifier = Modifier.height(32.dp))
 
-                OutlinedButton(
-                    onClick = { viewModel.onIncrement() },
-                    enabled = !state.isSaving
+                Button(
+                    onClick = viewModel::onRegisterDeposit,
+                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentColor)
                 ) {
-                    Text(text = "+")
+                    Text("Confirmar Depósito", fontSize = 16.sp)
                 }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { viewModel.onRegisterDeposit() },
-                enabled = !state.isSaving
-            ) {
-                Text(text = "Registrar depósito")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (state.isSaving) {
-                CircularProgressIndicator()
-            }
-
-            state.successMessage?.let { msg ->
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = msg)
-            }
-
-            state.errorMessage?.let { msg ->
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = msg)
+                state.errorMessage?.let {
+                    Spacer(Modifier.height(16.dp))
+                    Text(it, color = Color.Red, textAlign = TextAlign.Center)
+                }
             }
         }
     }

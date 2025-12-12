@@ -98,6 +98,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    // Íconos de Material Design
+    implementation(libs.androidx.material.icons.extended) // <<< NUEVA DEPENDENCIA
+
     // NUEVO: para que Theme.Material3.DayNight.NoActionBar exista
     implementation(libs.google.material)
 
@@ -119,6 +122,9 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
+
+    // ADDED: DataStore (Preferencias de usuario)
+    implementation(libs.androidx.datastore.preferences)
 
     // ADDED: Networking (Retrofit, OkHttp)
     implementation(libs.retrofit)

@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.revioplus.app.presentation.home.HomeScreen
 import com.revioplus.app.presentation.deposit.DepositScreen
+import com.revioplus.app.presentation.login.LoginScreen
 import com.revioplus.app.presentation.profile.ProfileScreen
 import com.revioplus.app.presentation.profile.wallet.WalletScreen
 import com.revioplus.app.presentation.profile.history.ProfileHistoryScreen
@@ -18,9 +19,21 @@ fun ReVioNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavRoute.Home.route,
+        startDestination = NavRoute.Login.route, // Ruta de inicio: Login
         modifier = modifier
     ) {
+
+        // Vista Login
+        composable(NavRoute.Login.route) {
+            LoginScreen(
+                onLoginSuccess = {
+                    // Navegar al Home y borrar el Login del historial
+                    navController.navigate(NavRoute.Home.route) {
+                        popUpTo(NavRoute.Login.route) { inclusive = true }
+                    }
+                }
+            )
+        }
 
         // Vista principal: Inicio (Home)
         composable(NavRoute.Home.route) {
