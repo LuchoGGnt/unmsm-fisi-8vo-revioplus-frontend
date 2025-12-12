@@ -18,7 +18,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "http://10.0.2.2:8080/api/v1/"
+    private const val BASE_URL = "https://revioplus-backend-152975877286.us-central1.run.app/api/v1/"
 
     @Provides
     @Singleton
