@@ -13,8 +13,10 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.revioplus.app.presentation.components.BottomNavItem
 import com.revioplus.app.presentation.components.ReVioBottomBar
@@ -46,6 +48,8 @@ class MainActivity : ComponentActivity() {
 fun ReVioPlusAppRoot() {
     ReVioPlusTheme {
         val navController = rememberNavController()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
 
         val bottomDestinations = listOf(
             BottomNavItem(
@@ -67,10 +71,12 @@ fun ReVioPlusAppRoot() {
 
         Scaffold(
             bottomBar = {
-                ReVioBottomBar(
-                    navController = navController,
-                    destinations = bottomDestinations
-                )
+                if (currentRoute != NavRoute.Login.route) {
+                    ReVioBottomBar(
+                        navController = navController,
+                        destinations = bottomDestinations
+                    )
+                }
             }
         ) { innerPadding ->
             ReVioNavGraph(
